@@ -1,0 +1,11 @@
+a {
+  text-decoration: none;
+}
+
+code {
+  font-size: 0.85em;
+  padding: .2em .4em;
+  border-radius: 6px;
+  white-space: break-spaces;
+  background-color: #f6f8fa;
+}

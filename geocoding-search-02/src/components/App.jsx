@@ -14,9 +14,23 @@ const fetchCoordinates = (searchQuery) => {
     .then(result => result.reverse())
 }
 
+const fetchWeatherData = (coordinates) => {
+  // https://www.weather.gov/documentation/services-web-api
+
+  const WEATHER_API_URL = `https://api.weather.gov/points/${coordinates[0]},${coordinates[1]}`
+
+  return fetch(WEATHER_API_URL)
+    .then(result => result.json())
+    .then(result => result.properties.forecast)
+    .then(fetch)
+    .then(result => result.json())
+    .then(result => result.properties.periods)
+}
+
 const App = () => {
   const [searchQuery, setSearchQuery] = useState(null);
   const [coordinates, setCoordinates] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
 
   useEffect(() => {
     setCoordinates(null)
@@ -27,6 +41,16 @@ const App = () => {
       .catch(error => {})
     }
   }, [searchQuery]);
+
+  useEffect(() => {
+    setWeatherData(null)
+
+    if (coordinates) {
+      fetchWeatherData(coordinates)
+      .then(setWeatherData)
+      .catch(error => {})
+    }
+  }, [coordinates]);
 
   const runSearchQuery = (event) => {
     event.preventDefault();
@@ -53,10 +77,18 @@ const App = () => {
                     <tr>
                       <th>latitude:</th>
                       <th>longitude:</th>
+                      <th width="100%">weather:</th>
                     </tr>
                     <tr>
                       <td>{coordinates[0]}</td>
                       <td>{coordinates[1]}</td>
+                      <td>
+                      {
+                        (weatherData && weatherData.length && weatherData[0].detailedForecast)
+                          ? weatherData[0].detailedForecast
+                          : ''
+                      }
+                      </td>
                     </tr>
                   </tbody>
                 </table>
